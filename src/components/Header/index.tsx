@@ -70,7 +70,7 @@ const Header: React.FC = () => {
             <img
               src={
                 user && user.avatar
-                  ? `http://localhost:3333/files/${user.avatar}`
+                  ? `${process.env.REACT_APP_HOST_API}/files/${user.avatar}`
                   : PlaceholderImg
               }
               alt="Imagem do Usuário"

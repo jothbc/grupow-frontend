@@ -88,7 +88,7 @@ const Dashboard: React.FC = () => {
             <img
               src={
                 p.user.avatar
-                  ? `http://localhost:3333/files/${p.user.avatar}`
+                  ? `${process.env.REACT_APP_HOST_API}/files/${p.user.avatar}`
                   : PlaceholderUser
               }
               alt="Imagem do Usuário"
