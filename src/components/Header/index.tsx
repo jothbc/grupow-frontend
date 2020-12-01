@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { FiPower } from 'react-icons/fi';
@@ -8,34 +8,17 @@ import PlaceholderImg from '../../assets/img_placeholder.png';
 
 import { Container, Logo, Content } from './styles';
 import api from '../../services/api';
-
-interface UserProps {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-}
+import { AuthContext } from '../../hooks/auth';
 
 const Header: React.FC = () => {
   const history = useHistory();
 
-  const [user, setUser] = useState<UserProps>(() => {
-    const temp = localStorage.getItem('@grupoW');
-    if (temp) {
-      return JSON.parse(temp);
-    }
-    return null;
-  });
-
-  if (!user) {
-    localStorage.removeItem('@grupoW');
-    history.push('/login');
-  }
+  const { user, updateUser, logout: logoutAuth } = useContext(AuthContext);
 
   const logout = useCallback(() => {
-    localStorage.removeItem('@grupoW');
+    logoutAuth();
     history.push('/login');
-  }, [history]);
+  }, [history, logoutAuth]);
 
   const handleUploadAvatar = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
@@ -45,14 +28,13 @@ const Header: React.FC = () => {
           data.append('id', user.id);
           data.append('avatar', e.target.files[0]);
           const response = await api.patch('/users/avatar', data);
-          localStorage.setItem('@grupoW', JSON.stringify(response.data));
-          setUser(response.data);
+          updateUser(response.data);
         }
       } catch (err) {
         console.log(err.response);
       }
     },
-    [user],
+    [user, updateUser],
   );
 
   return (

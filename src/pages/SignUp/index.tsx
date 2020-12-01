@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { FiLock, FiMail, FiUser } from 'react-icons/fi';
 import { Container, Section, Background } from './styles';
@@ -7,6 +7,7 @@ import LogoImg from '../../assets/logo.png';
 import Input from '../../components/Input';
 import api from '../../services/api';
 import Toast from '../../components/Toast';
+import { AuthContext } from '../../hooks/auth';
 
 const SignUp: React.FC = () => {
   const history = useHistory();
@@ -14,6 +15,8 @@ const SignUp: React.FC = () => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+
+  const { signup } = useContext(AuthContext);
 
   const [toast, setToast] = useState('');
 
@@ -23,29 +26,22 @@ const SignUp: React.FC = () => {
     async (e) => {
       e.preventDefault();
       try {
-        const response = await api.post('/users', {
-          name,
+        await signup({
           email,
+          name,
           password,
           password_confirm: passwordConfirm,
         });
         setError(false);
         setToast('');
 
-        if (response.data) {
-          const user = response.data;
-          localStorage.setItem('@grupoW', JSON.stringify(user));
-          history.push('/');
-        } else {
-          setError(true);
-          setToast(response.data.message);
-        }
+        history.push('/');
       } catch (err) {
         setError(true);
-        setToast(err.response.data.message);
+        setToast(err.message);
       }
     },
-    [email, password, passwordConfirm, history],
+    [email, password, passwordConfirm, history, name, signup],
   );
 
   return (

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { FiClock } from 'react-icons/fi';
 import { setTextRange } from 'typescript';
 import { useHistory } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { Container, NewPost, Post } from './styles';
 import PlaceholderUser from '../../assets/img_placeholder.png';
 import api from '../../services/api';
 import Toast from '../../components/Toast';
+import { AuthContext } from '../../hooks/auth';
 
 interface UserProps {
   id: string;
@@ -27,14 +28,9 @@ const Dashboard: React.FC = () => {
   const [text, setText] = useState('');
   const [toast, setToast] = useState('');
   const [posts, setPosts] = useState([] as Post[]);
-  const [user] = useState<UserProps>(() => {
-    const temp = localStorage.getItem('@grupoW');
-    if (temp) {
-      return JSON.parse(temp);
-    }
-    return null;
-  });
-  if (!user) {
+  const { user: userAuth } = useContext(AuthContext);
+
+  if (!userAuth) {
     localStorage.removeItem('@grupoW');
     history.push('/login');
   }
@@ -48,14 +44,14 @@ const Dashboard: React.FC = () => {
   const handleSubmitPost = useCallback(async () => {
     try {
       setToast('');
-      const { data } = await api.post('/post', { id: user.id, text });
+      const { data } = await api.post('/post', { id: userAuth.id, text });
 
       setPosts([data, ...posts]);
       setText('');
     } catch (err) {
       setToast(err.response.data.message);
     }
-  }, [text, posts, user]);
+  }, [text, posts, userAuth]);
 
   return (
     <>

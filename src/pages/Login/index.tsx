@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { FiLock, FiMail } from 'react-icons/fi';
 import { Container, Section, Background } from './styles';
@@ -7,11 +7,14 @@ import LogoImg from '../../assets/logo.png';
 import Input from '../../components/Input';
 import api from '../../services/api';
 import Toast from '../../components/Toast';
+import { AuthContext } from '../../hooks/auth';
 
 const Login: React.FC = () => {
   const history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const { login } = useContext(AuthContext);
 
   const [error, setError] = useState(false);
   const [toast, setToast] = useState('');
@@ -20,24 +23,16 @@ const Login: React.FC = () => {
     async (e) => {
       e.preventDefault();
       try {
-        const response = await api.post('/login', { email, password });
+        await login({ email, password });
         setError(false);
         setToast('');
-
-        if (response.data) {
-          const user = response.data;
-          localStorage.setItem('@grupoW', JSON.stringify(user));
-          history.push('/');
-        } else {
-          setError(true);
-          setToast(response.data.message);
-        }
+        history.push('/');
       } catch (err) {
         setError(true);
-        setToast(err.response.data.message);
+        setToast(err.message);
       }
     },
-    [email, password, history],
+    [email, password, history, login],
   );
 
   return (

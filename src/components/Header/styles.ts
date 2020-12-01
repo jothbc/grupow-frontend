@@ -24,6 +24,8 @@ export const Content = styled.div`
       }
       img {
         height: 56px;
+        width: 56px;
+        object-fit: cover;
         border-radius: 50%;
       }
     }
