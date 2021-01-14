@@ -30,7 +30,7 @@ const Dashboard: React.FC = () => {
   const [posts, setPosts] = useState([] as Post[]);
   const { user: userAuth } = useContext(AuthContext);
 
-  if (!userAuth) {
+  if (!userAuth.id) {
     localStorage.removeItem('@grupoW');
     history.push('/login');
   }
