@@ -94,7 +94,7 @@ const Dashboard: React.FC = () => {
               <p>{p.text}</p>
               <span>
                 <FiClock color="#ff9000" />
-                {p.created_at.split(' ')[1]}
+                {p.created_at.split(' ')[4]}
               </span>
             </div>
           </Post>
